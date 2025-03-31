@@ -182,28 +182,42 @@ public class MotorPHPayroll {
                 while ((row = reader.readNext()) != null) {
                     
 
-          // If it reads on the first line (the header), it will skip it
+          // If it reads on the first line (which is the header), it will skip it
                     if (firstLine) {
                         firstLine = false;
                         continue;
                     }
+
+
                     
-                    //this is the total columns for the csv to read
-                    if (row.length < 19) {
-                        continue;
-                    }
-                    
+    for (int i = 0; i < 9; i++) { // Only checking the first 9 fields needed for Employee
+    if (row[i] == null || row[i].trim().isEmpty()) {
+        throw new IllegalArgumentException("❌ Missing required field at column " + i +
+                                           " in row: " + Arrays.toString(row));
+    }
+}
                     
                     String id              = row[0].trim();
                     String lastName        = row[1].trim();
                     String firstName       = row[2].trim();
-                    String birthday        = row[3].trim();
-                    double basicSalary     = parseDoubleOrZero(row[13]);
+                    String birthday        = row[3].trim(); 
+
+           // This will convert the basic salary to a number (double)
+           // If the value is empty or invalid, it becomes 0.0 using parseDoubleOrZero()
+                    double basicSalary     = parseDoubleOrZero(row[13]); 
+
+                 // This line converts rice subsidy amount to a number
                     double riceSubsidy     = parseDoubleOrZero(row[14]);
-                    double phoneAllowance  = parseDoubleOrZero(row[15]);
-                    double clothingAllowance = parseDoubleOrZero(row[16]);
-                    double hourlyRate      = parseDoubleOrZero(row[18]);
-                    
+                  // This line will convert phone allowance amount to a number
+                    double phoneAllowance  = parseDoubleOrZero(row[15]); 
+
+                  // This line will convert clothing allowance amount to a number
+                    double clothingAllowance = parseDoubleOrZero(row[16]); 
+
+                   // This will convert hourly rate to a number
+                    double hourlyRate      = parseDoubleOrZero(row[18]); 
+                  
+                    // This will create an Employee object using the values above
                     Employee emp = new Employee(
                             id,
                             lastName,
@@ -214,12 +228,17 @@ public class MotorPHPayroll {
                             phoneAllowance,
                             clothingAllowance,
                             basicSalary
-                    );
+                    ); 
+
+               //After the employee data above, this line stores them in a map (like a mini database in memory) using the employee ID as the key.
                     employeeMap.put(id, emp);
-                }
+                } 
+
+             // This line catches errors related to CSV validation (for example if the format is wrong)
             } catch (CsvValidationException ex) {
                 Logger.getLogger(MotorPHPayroll.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } 
+         // This block catches file-related errors, like if the CSV file doesn't exist or can't be read
         } catch (IOException e) {
             System.err.println("Error reading employee file: " + e.getMessage());
         }
@@ -227,8 +246,12 @@ public class MotorPHPayroll {
     }
 
     
-    // I used OpenCSV to read csv file
-    private static HashMap<String, List<EmployeeRecord>> loadAttendanceData(String filePath) {
+    // I used OpenCSV for it to read csv file
+    private static HashMap<String, List<EmployeeRecord>> loadAttendanceData(String filePath) { 
+
+    // This will store all employee attendance records
+    // The key (String) is the employee ID
+    // The value is a list of EmployeeRecord (one per day)
         HashMap<String, List<EmployeeRecord>> attendanceMap = new HashMap<>();
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             String[] row;
@@ -241,10 +264,16 @@ public class MotorPHPayroll {
                         continue;
                     }
                     
-                    //this is information about columns
                     if (row.length < 6) {
-                        continue;
-                    }
+    throw new IllegalArgumentException("Missing data in CSV row: " + Arrays.toString(row));
+}
+
+// This will throw an error if any of the first 6 columns is empty
+for (int i = 0; i < 6; i++) {
+    if (row[i] == null || row[i].trim().isEmpty()) {
+        throw new IllegalArgumentException("Empty column " + i + " in CSV row: " + Arrays.toString(row));
+    }
+}
                     
                     
                     String employeeId   = row[0].trim();
