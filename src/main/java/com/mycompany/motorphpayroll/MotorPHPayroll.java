@@ -23,6 +23,10 @@ class Employee {
     double clothingAllowance;
     double basicSalary;
 
+    // This is the constructor method
+    // A constructor is a special method that runs when we create a new employee
+    // It lets us set up all the details of the employee at once
+
     Employee(String id,
              String lastName,
              String firstName,
@@ -33,6 +37,8 @@ class Employee {
              double clothingAllowance,
              double basicSalary) {
 
+         // Inside the constructor, we use "this" to refer to the current object's variables
+        // We're saying: "Set this employee's id to the id we received as input"
         this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
@@ -45,25 +51,38 @@ class Employee {
     }
 }
 
+// This class stores the attendance or work record of an employee for a specific day
 class EmployeeRecord {
-    String date;
-    double hoursWorked;
-    double deductedHours;
+    String date; // The date of the work record 
+    double hoursWorked;  // Total number of hours the employee worked on that day
+    double deductedHours; // Number of hours deducted (example: for being late or absent)
 
+    // This is the constructor of the EmployeeRecord class
+    // It allows us to create a new record and set the values immediately
     EmployeeRecord(String date, double hoursWorked, double deductedHours) {
+
+     // Assigns the value passed into the constructor to the class variable
         this.date = date;
+     // Assigns how many hours were worked
         this.hoursWorked = hoursWorked;
+      // Assign show many hours were deducted
         this.deductedHours = deductedHours;
     }
 }
 
-public class MotorPHPayroll {
+public class MotorPHPayroll { 
+
+ // This sets up a date formatter to format or read dates in the pattern M/d/yy (e.g., 3/31/25)
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yy");
+
+// This sets up a time formatter to format or read time in the pattern H:mm (e.g., 9:45 or 13:30)
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
 
     
-    // SSS calculation
+    // SSS calculation method 
     public static double calculateSSS(double salary) {
+ // This is a 2D array that holds salary ranges and the corresponding SSS contribution
+    // Each row = {minimum salary, maximum salary, SSS contribution}
         double[][] salaryRanges = {
             {0, 3249, 135}, {3250, 3749, 157.5}, {3750, 4249, 180}, {4250, 4749, 202.5},
             {4750, 5249, 225}, {5250, 5749, 247.5}, {5750, 6249, 270}, {6250, 6749, 292.5},
@@ -78,33 +97,50 @@ public class MotorPHPayroll {
             {22750, 23249, 1035}, {23250, 23749, 1057.5}, {23750, 24249, 1080}, {24250, 24749, 1102.5},
             {24750, Double.MAX_VALUE, 1125}
         };
-
+    // Loop through each range in the salaryRanges table
         for (double[] range : salaryRanges) {
+ // Check if the input salary falls within the current range
             if (salary >= range[0] && salary <= range[1]) {
                 return range[2];
             }
-        }
+        }   // In case salary doesn't match (this shouldn't happen), return 0
         return 0;
     }
     
     
     // This is the Withholding Tax Calculation based on the MotorPH data
     private static double calculateWithholdingTax(double basicSalary) {
-        double tax;
+        double tax; // This will store the result of the tax to be returned 
+
+       // If the salary is 20,833 or less, there's no tax
         if (basicSalary <= 20833) {
-            tax = 0;
+            tax = 0; 
+ // If the salary is more than 20,833 but less than or equal to 33,333
+    // Tax is 20% of the amount over 20,833
         } else if (basicSalary <= 33333) {
             tax = (basicSalary - 20833) * 0.20;
+
+    // If salary is more than 33,333 but less than or equal to 66,667
+    // Base tax is 2,500 + 25% of the excess over 33,333
         } else if (basicSalary <= 66667) {
-            tax = 2500 + (basicSalary - 33333) * 0.25;
+            tax = 2500 + (basicSalary - 33333) * 0.25; 
+
+    // If salary is more than 66,667 but less than or equal to 166,667
+    // Base tax is 10,833.33 + 30% of the excess over 66,667
         } else if (basicSalary <= 166667) {
-            tax = 10833.33 + (basicSalary - 66667) * 0.30;
+            tax = 10833.33 + (basicSalary - 66667) * 0.30; 
+
+    // If salary is more than 166,667 but less than or equal to 666,667
+    // Base tax is 40,833.33 + 32% of the excess over 166,667
         } else if (basicSalary <= 666667) {
-            tax = 40833.33 + (basicSalary - 166667) * 0.32;
+            tax = 40833.33 + (basicSalary - 166667) * 0.32; 
+
+    // If salary is more than 666,667
+    // Base tax is 200,833.33 + 35% of the excess over 666,667
         } else {
             tax = 200833.33 + (basicSalary - 666667) * 0.35;
         }
-        return tax;
+        return tax; // This will return the computed tax
     }
     
     
@@ -117,22 +153,36 @@ public class MotorPHPayroll {
     // This part of the code is to get the first Monday of a given month and year
     private static LocalDate getFirstMondayOfMonth(int year, int month) {
         LocalDate date = LocalDate.of(year, month, 1);
+
+     // Loop forward day by day until we find a Monday
         while (date.getDayOfWeek() != DayOfWeek.MONDAY) {
             date = date.plusDays(1);
-        }
+        } 
+
+      // Once a Monday is found, return it as the result
         return date;
     }
 
     
-    // This will be used to load the employee data from CSV i used (OpenCSV)
-    private static HashMap<String, Employee> loadEmployeeData(String filePath) {
-        HashMap<String, Employee> employeeMap = new HashMap<>();
+    //This method is used to load employee data from a CSV file
+    private static HashMap<String, Employee> loadEmployeeData(String filePath) { 
+
+     // This part is where the HashMap stores all employee info
+    // The key is the employee's ID (String), and the value is the Employee object
+        HashMap<String, Employee> employeeMap = new HashMap<>(); 
+
+      // Try to read the CSV file using OpenCSV's CSVReader
         try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
             String[] row;
             boolean firstLine = true;
-            try {
+
+ 
+            try { 
+          // This will keep reading the file one line at a time until there are no more lines
                 while ((row = reader.readNext()) != null) {
                     
+
+          // If it reads on the first line (the header), it will skip it
                     if (firstLine) {
                         firstLine = false;
                         continue;
