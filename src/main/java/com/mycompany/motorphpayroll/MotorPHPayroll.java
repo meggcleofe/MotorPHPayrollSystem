@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 //This class stores the employee information
 class Employee {
-    String id;
+    String empId;
     String lastName;
     String firstName;
     String birthday;
@@ -29,7 +29,7 @@ class Employee {
     // A constructor is a special method that runs when we create a new employee
     // It lets us set up all the details of the employee at once
 
-    Employee(String id,
+    Employee(String empId,
              String lastName,
              String firstName,
              String birthday,
@@ -41,7 +41,7 @@ class Employee {
 
          // Inside the constructor, we use "this" to refer to the current object's variables
         // We're saying: "Set this employee's id to the id we received as input"
-        this.id = id;
+        this.empId = empId;
         this.lastName = lastName;
         this.firstName = firstName;
         this.birthday = birthday;
@@ -199,7 +199,7 @@ public class MotorPHPayroll {
     }
 }
                     
-                    String id              = row[0].trim();
+                    String empId              = row[0].trim();
                     String lastName        = row[1].trim();
                     String firstName       = row[2].trim();
                     String birthday        = row[3].trim(); 
@@ -221,7 +221,7 @@ public class MotorPHPayroll {
                   
                     // This will create an Employee object using the values above
                     Employee emp = new Employee(
-                            id,
+                            empId,
                             lastName,
                             firstName,
                             birthday,
@@ -233,7 +233,7 @@ public class MotorPHPayroll {
                     ); 
 
                //After the employee data above, this line stores them in a map (like a mini database in memory) using the employee ID as the key.
-                    employeeMap.put(id, emp);
+                    employeeMap.put(empId, emp);
                 } 
 
              // This line catches errors related to CSV validation (for example if the format is wrong)
@@ -351,7 +351,7 @@ for (int i = 0; i < 6; i++) {
         }
 
         // This is for displaying employee information
-        System.out.println("\nEmployee #: " + employee.id);
+        System.out.println("\nEmployee #: " + employee.empId);
         System.out.println("Last Name: " + employee.lastName);
         System.out.println("First Name: " + employee.firstName);
         System.out.println("Birthday: " + employee.birthday);
