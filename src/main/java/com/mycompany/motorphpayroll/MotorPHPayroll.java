@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+//This class stores the employee information
 class Employee {
     String id;
     String lastName;
